@@ -147,15 +147,39 @@ for(i in 1:9)
 cVect
 
 #21
-y <- getquadratic(1,2,3)
-
-getquadratic <- function(a,b,c)
-{
-  x = -100:100
-  return (a * x ^ 2 + b * x + c)
+getroots <- function(a,b,c) {
+  
+  if(a > 0)
+  {
+    disc = b^2 - 4*a*c
+    
+    if(disc < 0)
+    {
+      result <- c("No Real Roots")
+    }
+    else if(disc == 0)
+    {
+      r1 = -b/(2*a)
+      result <- c(r1)
+    }
+    else
+    {
+      r1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)
+      r2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)
+      
+      result <- c(r1, r2)
+    }
+  }
+  else
+  {
+    result <- c("Not a Quadratic")
+  }
+  
+  return <- result
 }
 
-y
+roots <- getroots(1,-2,-4)
+roots
 
 
 
