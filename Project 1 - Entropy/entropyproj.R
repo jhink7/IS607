@@ -35,7 +35,20 @@ infogain <- function(input, atr) {
 }
 
 #### Q3 ####
-decide <- function(input, a, target) {
+decide <- function(input, target) {
+  
+  numcolums = ncol(input)
+  
+  a <- NULL
+  aindex = 1;
+  for(i in 1:numcolums)
+  {
+    if(i != target)
+    {
+      a[aindex] <- i
+      aindex = aindex + 1
+    }
+  }
   
   maxInfoGain = -9999 #an artifically low value
   maxInfoGainIndex = 0
@@ -79,7 +92,7 @@ infog
 infog <- infogain(input$answer, dataset[[1]])
 infog
 
-result <- decide(dataset, c(1,2,3), 4)
+result <- decide(dataset, 4)
 result
 
 
