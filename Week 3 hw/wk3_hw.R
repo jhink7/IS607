@@ -129,37 +129,136 @@ getkeyvalues <- function(input) {
     
   }
 
-  return <- c(missing = missvals,mean = avg, med = med, q1 = q1, q3 =q3, sd = sd, max = max, min = min)
+  return <- list(missing = missvals,mean = avg, med = med, q1 = q1, q3 =q3, sd = sd, max = max, min = min)
 }
 
 keyvalues <- getkeyvalues(c(6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49, 50, NA))
 keyvalues
 
 
-
-
-
-
-
-
-
-
-
-q1length <- index - 1
-if(q1length %% 2 == 0)
-{
-  q1index1 <- (q1length) / 2
-  q1index2 <- (q1length + 2) / 2
-  med <- (inputCleaned[q1index1] + inputCleaned[q1index2]) / 2
+#### Q4 ####
+getkeymetrics <- function(input) {
+  
+  
+  missvals <- length(which(is.na(input)))
+  
+  dist <- sort(unique(input))
+  
+  numdistinct <- length(dist)
+  
+  partitions <- tabulate(factor(sort(input)))
+  
+  tab <- sort(table(input),decreasing=TRUE)
+  
+  namemc <- NULL
+  for(i in 1:length(tab))
+  {
+    if(i == 1)
+    {
+      namemc <- names(tab)[1]
+    }
+    else
+    {
+      if(tab[i] == tab[1])
+      {
+        namemc <- paste(namemc,names(tab)[i], sep = " ")
+      }
+    }
+  }
+  
+  mostcommonelement <- namemc
+  nummostcommonelement <- max(tab)#max(partitions)
+  
+  
+  return <- list(missing = missvals,numdistinct = numdistinct, mostcommonelement = mostcommonelement, nummostcommonelement= nummostcommonelement)
 }
-else
-{    
-  q1index <- (q1length + 1) / 2
-  q1 <- inputCleaned[q1index]
+input<-c("a", "a", "bb", "ccc", "ccc", "bb", NA)
+keymetrics <- getkeymetrics(input)
+keymetrics
+
+#### Q5 ####
+getlogicalmetrics<- function(input) {
+  
+  inputCleaned <- input[!is.na(input)]
+  missvals <- getmissingvals(input)
+  trueLength <- length(input) - missvals
+  numtrue <- length(inputCleaned[inputCleaned==TRUE])
+  numfalse <- length(inputCleaned[inputCleaned==FALSE])
+  ptrue <- numtrue / trueLength
+  
+  return <- list(missvals = missvals, numtrue = numtrue, numfalse = numfalse, ptrue = ptrue)
 }
 
-q3length <- length(inputCleaned) - (index)
-q3startIndex <- index + 1
-q3EndIndex <- length(inputCleaned)
-#print(q3length)
+logmetrics <- getlogicalmetrics(c(TRUE, FALSE, FALSE, NA))
+logmetrics
+
+#### Q6 ####
+
+getdfmetrics<- function(input) {
+  masterlist = list()
+  for(i in 1:ncol(input))
+  {
+    col <- input[[i]]
+    
+    coltype <- class(input[[i]])
+    
+    if(coltype == "logical")
+    {
+      masterlist[[i]] = getlogicalmetrics(input[[i]])
+    }
+    else if (coltype == "factor")
+    {
+      masterlist[[i]] = getkeymetrics(input[[i]])
+    }
+    else if (coltype == "numeric")
+    {
+      masterlist[[i]] = getkeyvalues(input[[i]])
+    }
+    
+    
+    
+  }
+  
+  return <- masterlist
+}
+in1 <- c(TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE, NA)
+in2 <- c("a", "a","ccc", "bb", "a", "ccc", "a", NA)
+in3 <- c(2, 4, 6, 8, 10, 12, 14, NA)
+
+df <- data.frame(in1, in2, in3)
+
+dfmetrics <- getdfmetrics(df)
+dfmetrics
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
