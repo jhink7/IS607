@@ -31,7 +31,7 @@ missval2 <- getmissingvalsfromDF(df)
 missval2
 
 #### Q3 ####
-getkeyvalues <- function(input) {
+getnumericalvalues <- function(input) {
   
   missvals <- getmissingvals(input)
   inputCleaned <- input[!is.na(input)]
@@ -132,12 +132,12 @@ getkeyvalues <- function(input) {
   return <- list(missing = missvals,mean = avg, med = med, q1 = q1, q3 =q3, sd = sd, max = max, min = min)
 }
 
-keyvalues <- getkeyvalues(c(6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49, 50, NA))
+keyvalues <- getnumericalvalues(c(6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49, 50, NA))
 keyvalues
 
 
 #### Q4 ####
-getkeymetrics <- function(input) {
+getfactormetrics <- function(input) {
   
   
   missvals <- length(which(is.na(input)))
@@ -173,7 +173,7 @@ getkeymetrics <- function(input) {
   return <- list(missing = missvals,numdistinct = numdistinct, mostcommonelement = mostcommonelement, nummostcommonelement= nummostcommonelement)
 }
 input<-c("a", "a", "bb", "ccc", "ccc", "bb", NA)
-keymetrics <- getkeymetrics(input)
+keymetrics <- getfactormetrics(input)
 keymetrics
 
 #### Q5 ####
@@ -208,11 +208,11 @@ getdfmetrics<- function(input) {
     }
     else if (coltype == "factor")
     {
-      masterlist[[i]] = getkeymetrics(input[[i]])
+      masterlist[[i]] = getfactormetrics(input[[i]])
     }
     else if (coltype == "numeric")
     {
-      masterlist[[i]] = getkeyvalues(input[[i]])
+      masterlist[[i]] = getnumericalvalues(input[[i]])
     }
     
     
