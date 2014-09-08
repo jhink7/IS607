@@ -74,7 +74,7 @@ roots
 #3
 v1 <- 1:1000
 
-vDiv <- (v1 %% 3 == 0) | (v1 %% 7 == 0)|(v1 %% 11 == 0)
+vDiv <- (v1 %% 3 != 0) & (v1 %% 7 != 0)&(v1 %% 11 != 0)
 vDiv <- vDiv[vDiv %in% c(TRUE)]
 count <- length(vDiv)
 count
