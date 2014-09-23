@@ -4,6 +4,8 @@ library(ggplot2)
 library(plyr)
 library(data.table)
 library(dplyr) 
+library(boot) 
+library(reshape2) 
 
 masterHitters = read.csv("Hitters.csv") 
 
@@ -60,5 +62,58 @@ corrwRCPlus <- cor(year2year$wRCPlus.x, year2year$wRCPlus.y)
 corrHRPerFB <- cor(na.omit(year2year)$HR.FB.x, na.omit(year2year)$HR.FB.y)
 corrBBPct <- cor(year2year$BBPct.x, year2year$BBPct.y)
 corrKPct <- cor(na.omit(year2year)$KPct.x, na.omit(year2year)$KPct.y)
+
+#### Weighted Year to Year Correlations ####
+wCorrAvg <- corr(cbind(year2year$AVG.x, year2year$AVG.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
+wCorrRBI<- corr(cbind(year2year$RBI.x, year2year$RBI.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
+wCorrR <- corr(cbind(year2year$R.x, year2year$R.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
+
+wCorrOBP<- corr(cbind(year2year$OBP.x, year2year$OBP.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
+wCorrSLG <- corr(cbind(year2year$SLG.x, year2year$SLG.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
+                                                       
+wCorrwRCPlus <- corr(cbind(year2year$wRCPlus.x, year2year$wRCPlus.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
+wHRPerFB<- corr(cbind(na.omit(year2year)$HR.FB.x, na.omit(year2year)$HR.FB.y), w=(as.numeric(na.omit(year2year$PA.x) + as.numeric(na.omit(year2year$PA.y)))))
+wBBPct <- corr(cbind(year2year$BBPct.x, year2year$BBPct.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
+wKPct <- corr(cbind(na.omit(year2year)$KPct.x, na.omit(year2year)$KPct.y), w=(as.numeric(na.omit(year2year$PA.x) + as.numeric(na.omit(year2year$PA.y)))))
+
+#### Defensive Spectrum to Offense Correlation ####
+defSpecToOffCorr <- corr(cbind(masterHitters$Pos, masterHitters$wRCPlus), w=(masterHitters$PA))
+
+p3 <- ggplot(masterHitters, aes(x=Pos, y=wRCPlus)) +
+  geom_point(shape=1) +    # Use hollow circles
+  geom_smooth(method=lm)
+
+p3
+
+#### Defensive Spectrum to WAR Correlation ####
+defSpecToWARCorr <- corr(cbind(masterHitters$Pos, masterHitters$WAR), w=(masterHitters$PA))
+
+p4 <- ggplot(masterHitters, aes(x=Pos, y=WAR)) +
+  geom_point(shape=1) +    # Use hollow circles
+  geom_smooth(method=lm)
+
+p4
+
+
+#### Correlations Matrix ####
+
+noNAHitters <- filter(masterHitters, !is.na(KPct))
+
+d <- data.frame(KPct = noNAHitters$KPct, BBPct = noNAHitters$BBPct, HR = noNAHitters$HR, RBI = noNAHitters$RBI, R = noNAHitters$R, wRCPlus = noNAHitters$wRCPlus, Off = noNAHitters$Off, Def = noNAHitters$Def, WAR = noNAHitters$WAR)
+
+d_cor <- as.matrix(cor(d))
+d_cor_melt <- arrange(melt(d_cor), -abs(value))
+
+c <- ncol(d)
+r <- nrow(d_cor_melt)
+numTail <- r- c
+d_cor_melt<- tail(d_cor_melt, numTail)
+
+Nth.delete<-function(dataframe, n)dataframe[-(seq(n,to=nrow(dataframe),by=n)),]
+
+corFrame <- data.frame(d_cor_melt)
+row.names(corFrame) <- seq(nrow(corFrame))
+corFrame <- Nth.delete(corFrame, 2)
+
 
 
