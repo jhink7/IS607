@@ -43,3 +43,22 @@ p2 + geom_bar(aes(x=Team3), data=teamOffenseProxyTable, stat="identity")
 
 print(teamOffenseProxyTable)
 
+#### Year to Year Correlations ####
+masterHitters2 <- masterHitters
+masterHitters2$Season <- masterHitters2$Season + 1
+
+year2year <- merge(masterHitters2, masterHitters, by=c("playerid", "Season"))
+
+corrAvg <- cor(year2year$AVG.x, year2year$AVG.y)
+corrRBI <- cor(year2year$RBI.x, year2year$RBI.y)
+corrR <- cor(year2year$R.x, year2year$R.y)
+
+corrOBP <- cor(year2year$OBP.x, year2year$OBP.y)
+corrSLG <- cor(year2year$SLG.x, year2year$SLG.y)
+
+corrwRCPlus <- cor(year2year$wRCPlus.x, year2year$wRCPlus.y)
+corrHRPerFB <- cor(na.omit(year2year)$HR.FB.x, na.omit(year2year)$HR.FB.y)
+corrBBPct <- cor(year2year$BBPct.x, year2year$BBPct.y)
+corrKPct <- cor(na.omit(year2year)$KPct.x, na.omit(year2year)$KPct.y)
+
+
