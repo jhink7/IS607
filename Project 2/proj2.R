@@ -76,6 +76,11 @@ wHRPerFB<- corr(cbind(na.omit(year2year)$HR.FB.x, na.omit(year2year)$HR.FB.y), w
 wBBPct <- corr(cbind(year2year$BBPct.x, year2year$BBPct.y), w=(as.numeric(year2year$PA.x) + as.numeric(year2year$PA.y)))
 wKPct <- corr(cbind(na.omit(year2year)$KPct.x, na.omit(year2year)$KPct.y), w=(as.numeric(na.omit(year2year$PA.x) + as.numeric(na.omit(year2year$PA.y)))))
 
+f<-data.frame(c("Avg","RBI","R","OBP","SLG","wRC+","HRPerFB","BBPct","KPct"), c(wCorrAvg, wCorrRBI, wCorrR, wCorrOBP, wCorrSLG, wCorrwRCPlus, wHRPerFB, wBBPct,wKPct))
+setnames(f, c("Stat","R") )
+f[with(f, order(-R)), ]
+print(f)
+
 #### Defensive Spectrum to Offense Correlation ####
 defSpecToOffCorr <- corr(cbind(masterHitters$Pos, masterHitters$wRCPlus), w=(masterHitters$PA))
 
