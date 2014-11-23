@@ -1,0 +1,50 @@
+CREATE TABLE basicplayer
+(
+  playerid integer NOT NULL,
+  name character varying(25) NOT NULL,
+  team character varying(5) NOT NULL,
+  CONSTRAINT basic_player_id PRIMARY KEY (playerid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE basicplayer
+  OWNER TO postgres;
+
+-- populate
+INSERT INTO basicplayer
+VALUES(1, 'Michael Jordan', 'CHI')
+
+INSERT INTO basicplayer
+VALUES(2, 'Bill Russell', 'BOS')
+
+INSERT INTO basicplayer
+VALUES(3, 'Lebron James', 'CLE')
+
+-- define function/sproc
+CREATE FUNCTION merge_player(pid INT, pName varchar(25), tName varchar(5)) RETURNS VOID AS
+$$
+BEGIN
+    LOOP
+        -- first try to update the key
+        UPDATE basicplayer SET name = pName, team = tName WHERE playerid = pid;
+        IF found THEN
+            RETURN;
+        END IF;
+        -- not there, so try to insert the key
+        -- if someone else inserts the same key concurrently,
+        -- we could get a unique-key failure
+        BEGIN
+            INSERT INTO basicplayer(playerid,name, team) VALUES (pid, pName, tName);
+            RETURN;
+        EXCEPTION WHEN unique_violation THEN
+            -- do nothing, and loop to try the UPDATE again
+        END;
+    END LOOP;
+END;
+$$
+LANGUAGE plpgsql;
+
+-- call sproc
+SELECT merge_player(1, 'new player', 'newT');
+
