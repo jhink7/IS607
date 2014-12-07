@@ -61,6 +61,5 @@ CREATE TABLE pbpraw
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE pbpraw
-  OWNER TO "Justin";
+
 
